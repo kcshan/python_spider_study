@@ -1,0 +1,937 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Nginx从入门到实践_Nginx中间件-慕课网实战</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="renderer" content="webkit"><meta name="mobile-agent" content="format=wml"; url="https://coding.m.imooc.com/classindex.html?cid=121">
+<link rel="alternate" media="only screen and (max-width: 640px)" href="https://coding.m.imooc.com/classindex.html?cid=121">
+<meta name="mobile-agent" content="format=xhtml"; url="https://coding.m.imooc.com/classindex.html?cid=121">
+<meta name="mobile-agent" content="format=html5"; url="https://coding.m.imooc.com/classindex.html?cid=121">
+    <meta property="qc:admins" content="77103107776157736375" />
+    <meta property="wb:webmaster" content="c4f857219bfae3cb" />
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    <meta http-equiv="Cache-Control" content="no-transform " />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="keywords" content="Nginx入门到实践" />
+    <meta name="description" content="系统介绍Nginx ，尤其是Nignx中间件，课程通用性非常高，几乎所有与后台相关的技术人员都会用到，了解Nginx 的人很多，但真正掌握Nginx 的却很少，系统掌握Nginx配置与快速搭建高可用架构的技术方法，你必将成为企业争抢的高薪人才" />
+    
+    <link rel="stylesheet" href="//www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?v=201810311053" type="text/css" />
+    <script src="/static/lib/zhugeio/init.js"></script>
+    
+    <style type="text/css">
+    .moco-modal-info {
+        font-size: 14px;
+        line-height: 20px;
+    }
+    </style>
+    
+
+
+
+
+
+			<link merge="false" rel="stylesheet" type='text/css' href="/static/module/class/content/css/121-less.css?v=201810311053" />
+	
+    <script type="text/javascript">
+        var OP_CONFIG={"module":"class","page":"index","userout":0,"usercaution":""};
+        OP_CONFIG.isLogin = 0;
+        var isLogin = 0;
+        var _msg_unread = 0; 
+        var _not_unread = 0; 
+        var _cartFlag = 0;
+        var seajsTimestamp="v=201810311053";
+            </script>
+    
+    
+    <link rel="stylesheet" href="//coding.imooc.com/static/module/??common/css/common-less.css,course/css/course-less.css,course/css/precon-less.css,class/common/css/index-less.css?v=1540871441" type="text/css" />
+</head>
+<body >
+
+<div id="header">
+    <div class="page-container" id="nav">
+        <div id="logo" class="logo"><a href="//www.imooc.com/" target="_self" class="hide-text" title="首页">慕课网</a></div>
+
+        <button type="button" class="navbar-toggle visible-xs-block js-show-menu" >
+            <i class="sz-list"></i>
+        </button>
+
+        <div class="g-menu-mini l">
+            <a href="javascript:;" class="menu-ctrl">
+                <i class="sz-list"></i>
+            </a>
+            <ul class="nav-item l">
+                        <li class="set-btn visible-xs-block"><a href="//www.imooc.com/user/newlogin" target="_self">登录</a> / <a href="//www.imooc.com/user/newsignup" target="_self">注册</a></li>
+                        <li><a href="//www.imooc.com/course/list" target="_self">免费课程</a></li>
+
+            <li><a href="/" class="active" target="_self">实战课程</a></li>
+            <li><a href="//class.imooc.com" target="_self">就业班</a></li>
+            <!--<li><a href="https://www.imooc.com/corp/index"   target="_self">分享</a></li>-->
+                        <li><a href="//www.imooc.com/wenda" target="_self">猿问</a></li>
+            <li><a href="//www.imooc.com/article" target="_self">手记</a></li>
+            <li><a href="//job.imooc.com" class="program-nav" target="_self">猿聘<i class="icn-new"></i></a></li>
+            <!--<li><a href="http://www.imooc.com/wiki" target="_self">WIKI</a></li>-->
+
+                    </ul>
+        </div>
+                    <div id="login-area">
+                <ul class="header-unlogin clearfix">
+                    <li class="app-download" id="js-app-load">
+                        <a href="//www.imooc.com/mobile/app" target="_blank" style="width:60px;">下载APP</a>
+                        <div class="app-load-box clearfix js-load-box">
+                            <img src="//www.imooc.com/static/img/common/appload.png " class="l">
+                            <div class="r">
+                                <p>扫描下载慕课网APP</p>
+                                <a href="https://itunes.apple.com/cn/app/mu-ke-wang/id722179140?mt=8"><i class="imv2-ios"></i>App Store下载</a>
+                                <a href="//www.imooc.com/mobile/mukewang.apk"><i class="imv2-android"></i>Android下载</a>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="shop-cart" id="shop-cart">
+                        <a href="//order.imooc.com/pay/cart" class="shop-cart-icon" target="_blank">
+                            <span class="sz-shopping-cart js-endcart"></span><span>购物车</span><span class="shopping_icon js-cart-num"  data-ordernum="0" data-cartnum="0" style='display: none'>0</span>
+                        </a>
+                        <div class="my-cart" id="js-my-cart"></div>
+                    </li>
+                    <li class="header-signin">
+                         <a href="#" id="js-signin-btn">登录</a> / <a href="#" id="js-signup-btn">注册</a>
+                    </li>
+                </ul>
+            </div>
+                    <div class='search-warp clearfix' style='min-width: 32px;'>
+
+                <div class="pa searchTags js-searchtags" ></div>
+
+                <div class="search-area" data-search="top-banner">
+                    <input class="search-input" data-suggest-trigger="suggest-trigger" placeholder="请输入想搜索的内容..." type="text" autocomplete="off">
+                    <input type='hidden' class='btn_search' data-search-btn="search-btn" />
+                    <ul class="search-area-result" data-suggest-result="suggest-result">
+                    </ul>
+                </div>
+                <div class='showhide-search' data-show='no'><i class='sz-search'></i></div>
+            </div>
+        </div>
+        </div>
+        
+
+        
+
+
+
+
+
+<div class="course-class-infos ">
+    <div class="w pr">
+    	  
+		<div class="path">
+			<a href="/">实战</a>
+			<i class="path-split">\</i><span>Nginx入门到实践 Nginx 中间件</span>
+		</div>
+		
+		<div class="extra">
+            
+            <div class='course-collect clearfix js-course-collect l' data-type='0' data-cid='121'>
+                <i class='imv2-star j'></i><span>收藏</span>
+            </div>
+        
+			<div class="share-action l bdsharebuttonbox bdshare-button-style0-16" data-bd-bind="1439263858135">
+				<a href="javascript:;" class="share wx js-share sz-weixin" data-cmd="weixin" title="分享到微信">
+				</a>
+				<a href="javascript:;" class="share qq js-share sz-qq" data-cmd="qzone" title="分享到QQ空间">
+				</a>
+				
+				<a href="javascript:;" class="share sina js-share sz-weibo" data-cmd="tsina" title="分享到新浪微博">
+				</a>
+			</div>
+		</div>
+		<div class='info-warp tc'>
+			<div class="title-box ">
+				<h1>Nginx入门到实践－Nginx 中间件</h1>
+												<h2>web服务、代理，应用层负载均衡、应用层安全防护、 Nginx+Lua，动静分离，全面系统的Nginx课程</h2>
+							</div>
+			<div class="splitline"></div>
+			
+			<div class='hide'>
+				<h1 class="l">Nginx入门到实践 Nginx 中间件</h1>
+			</div>
+			
+			
+			<div class='info-bar tc'> 
+				<div class="statics clearfix">
+					<div class="static-item first">
+						<span class="meta">难度</span>
+						<span class="meta-value"><strong>高级</strong></span>
+						<em>&#183;</em>
+					</div>
+					<div class="static-item static-time">
+						<span class="meta">时长</span>
+						<span class="meta-value"><strong>14小时</strong></span>
+						<em>&#183;</em>
+					</div>
+					<div class="static-item">
+						<span class="meta">学习人数</span>
+						<span class="meta-value"><strong>2477</strong></span>
+						<em>&#183;</em>
+					</div>
+					<div class="static-item">
+						<span class="meta">综合评分</span>
+						<span class="meta-value"><strong>9.56分</strong></span>
+					</div>
+				</div>
+			</div>
+
+
+			
+			<div class="price-box">
+				<span class="num clearfix">
+															
+										<span class="discount-price">
+						<span class="baseline baseline-y">
+						<span class="new-y">&yen;</span>
+						<span class="cur-price"><b>266</b><b class="sub">.00</b></span>
+						</span>
+					</span>
+										
+				</span>
+				
+															</div>
+
+			<div class="clearfix btnwarp">
+														<a href="javascript:;" class="js-buy-trigger buy-class-btn class-btn1 buynow-btn" data-cid="121" data-pay="0" id="buy-trigger">
+						<span>立即购买</span>
+					</a>
+					
+					<a href='javascript:;' class='js-addcart addcart' data-cid='121' data-type='1'>
+						<em class="line"></em>
+						<i class='sz-shopping-cart'></i>
+					</a>
+					
+													<div class="preview-tip"> 			
+								</div>
+			</div>
+
+			<div class="adjustment-intro-box">
+				<span class="hb-tips"><i class="hb-tips-icon"></i><a href="//www.imooc.com/help/detail/110" target="_blank"><span class="hb-tips-txt">支持支付宝花呗分期</span></a></span>
+							</div>
+			
+			
+
+		</div>
+	</div>
+			
+    <div class="info-bg" id="js-info-bg">
+	<div class="cover-img-wrap" style="background-image:url(//img.mukewang.com/szimg/5b908d610001086f20000559.jpg)"></div>
+    </div>
+</div>
+
+<div class='course-infos-t'>
+<div id='Anchor'></div>
+<div class="comp-tab-t js-comp-tab">
+	<ul class='clearfix'>
+		<li class="comp-tab-item-first comp-tab-item ">
+			<a href="/class/121.html#Anchor">课程介绍</a>
+			<div class="borderLine"></div>		</li>
+				<li class="comp-tab-item">
+			<a href="/class/package/121.html#Anchor">组合套餐</a>
+						
+		</li>
+				<li class="comp-tab-item ">
+			<a href="/class/chapter/121.html#Anchor">课程章节</a>
+					</li>
+		<li class="comp-tab-item">
+			<a href="/class/121.html#Prchor">售前咨询</a>
+			<span>60</span>
+
+		</li>
+		<li class="comp-tab-item ">
+			<a href="/class/evaluation/121.html#Anchor">用户评价</a>
+			<span>102</span>
+					</li>
+		
+				<li class="comp-tab-item ">
+			<a href="/class/121.html#Envir">环境参数</a>
+			
+					</li>
+				 		<li class="comp-tab-item ">
+ 			<a href="/class/log/121.html#Log">更新日志</a>
+ 			 		</li>
+ 			</ul>
+</div>
+
+<div class='js-fixed course-fixed-nav hide'>
+	<h3 class='fixed-course-name' title='Nginx入门到实践 Nginx 中间件'>Nginx入门到实践 Nginx 中间件</h3>
+	
+	<ul class='fixed-nav clearfix'>
+		<li class="fixed-nav-item-first fixed-nav-item ml0 active">
+			<a href="/class/121.html#Anchor">课程介绍</a>
+		</li>
+				<li class="fixed-nav-item ">
+			<a href="/class/package/121.html#Anchor">组合套餐</a>
+		</li>
+				<li class="fixed-nav-item ">
+			<a href="/class/chapter/121.html#Anchor">课程章节</a>
+		</li>
+		<li class="fixed-nav-item">
+			<a href="/class/121.html#Prchor">售前咨询</a>
+			<span>60</span>
+		</li>
+		<li class="fixed-nav-item ">
+			<a href="/class/evaluation/121.html#Anchor">用户评价</a>
+			<span>102</span>
+		</li>
+		
+				<li class="fixed-nav-item ">
+			<a href="/class/121.html#Envir">环境参数</a>
+		</li>
+		 			
+ 		<li class="fixed-nav-item ">
+ 			<a href="/class/log/121.html#Log">更新日志</a>
+ 		</li>
+ 			</ul>
+		
+	<div class="goumai">
+								<div class="buy-wrap r">
+				<a href="javascript:;" class="js-buy-trigger fixed-nav-btn fixed-btn1" data-cid="121" data-pay="0" id="buy-trigger">
+					<span>立即购买</span>
+				</a>
+				<a href='javascript:;' class='js-addcart addcart' data-cid='121' data-type='1'>
+					<span class='line'></span>
+					<i class='sz-add-shopping-cart'></i>
+				</a>
+			</div>
+			<span class="r fixed-nav-prices">￥266.00</span>
+			
+						</div>
+</div>
+
+
+<div class="info-video clearfix" style="background-image: url(//img.mukewang.com/szimg/5b908d6f0001a20309000500.jpg);">
+	<div class="video-dark-box l clearfix" style="display: block">
+		<div class="js-video-btn videoBtn l">
+			<div><i class="sz-play"></i></div>
+			<p>观看导学视频</p>
+		</div>
+		<div id="videoInfo" class="l">
+			<div id="content">
+				<div class="con">
+					<div class='info-name'>Nginx入门到实践 Nginx 中间件</div>
+					<div class='info-desc'>系统性介绍Nginx ，全面覆盖主流语言Python、GO、LNMP、Java的应用web服务场景，此课程通用性非常高，几乎所有与后台相关的技术人员都会用到，了解Nginx 的人很多，但真正掌握Nginx 的却很少，系统掌握Nginx配置与快速搭建高可用架构的技术方法，你必将成为企业争抢的高薪人才！
+</div>
+					
+				</div>
+				
+				<div class="line"></div>
+			</div>
+			
+		</div>
+	</div>
+	<div class="detail-white-box l" style="display: none;">
+
+		<div class="scrollConTeacher">
+			
+			<div class="detailContent">
+				<div class="nickname">Jeson老师</div>
+				<div class="jobType">资深架构师</div>
+				<div class="introduce" data-text="&lt;p&gt;&amp;nbsp;互联网公司技术负责人、架构师，同时于多家企业兼任技术指导。曾任职于凤凰网，曾就职于阿里文娱任职python开发、曾就职于阿里妈妈任职资深系统工程师。慕课网已上线出品课程：《Python自动化运维项目实战》、《Nginx从入门到实践》&lt;/p&gt;
+">
+					
+				</div>	
+
+			</div>
+						<div class="division clearfix">
+				<h3 class="l">讲师其他课程</h3>
+				<p class="r"></p>
+			</div>
+
+			<div class="recommend clearfix">
+								<a href="https://coding.imooc.com/class/160.html" target="_blank">
+								<div class="item l clearfix" id="item0" style="margin-right: 32px">
+								
+					<img  alt="Python+Django+Ansible Playbook自动化运维项目实战" src="//img.mukewang.com/szimg/5a5334a50001d3dc05400300-360-202.jpg"  class="l">
+
+					<div class="textCon">
+						<div class="className">Python+Django+Ansible Playbook自动化运维项目实战</div>
+						<div class="typeNumCon">
+							<span class="type">实战</span>
+														<span class="difficulty">中级</span>
+														<span class="headImg"></span>
+							
+							<span class="peopleNum"><i class="imv2-set-sns"></i>389</span>
+						</div>
+						<div class="priceDiscount clearfix"> 
+															<div class="price l">￥388.00</div>
+							
+						</div>
+						
+					</div>
+					
+				</div>
+				</a>
+								
+			</div>
+					</div>
+		
+	</div>
+
+
+
+	<div class="teacher-right-box r">
+		<div class="teacher">
+			<div class="whiteBorder"></div>
+			<a href="http://www.imooc.com/u/1352822" target="_blank">
+				<div class='headPortrait'>
+					<img src="//img.mukewang.com/user/5510c7a600016ea802200220-100-100.jpg">
+				</div>
+				<div class='nickname'>Jeson老师</div>
+			</a>
+			<p>资深架构师</p>
+		</div>
+		<div class="jiao" style="display: none;"></div>
+		
+	</div>
+		
+	<div class="comp-tabs-pannel video-container" style='display: none;' data-purl="//img.mukewang.com/szimg/5b908d6f0001a20309000500.jpg" data-vurl="//v3.mukewang.com/shizhan/5b90946ae520e509168b459d/H.mp4" id="js-video-content">
+		<!-- <div class="desc-short"> -->
+			<div class="video-wrap">
+				<div class="video-container" id="video-container"></div>
+			</div>
+		
+		<!-- </div> -->
+
+		<div class="video-mask"></div>
+		<div id="js-video-close" class="video-close imv2-close"></div>
+	</div>
+</div>
+<!-- <div id="js-index-video" class="video-container">
+ 	<div class="video-wrap" id="js-video-wrap" data-url="//v3.mukewang.com/shizhan/5b90946ae520e509168b459d/H.mp4">
+    
+  	</div>
+  	<div class="video-mask"></div>
+  	<div id="js-video-close" class="video-close imv2-close"></div>
+</div> -->
+</div>
+
+			
+<div class="infolayout clearfix">
+	
+
+		<div class="appendtemplate">
+		<!--ES_BEGIN-->
+		<div class="introduce-content">
+	<div class="section1">
+		<div class="wrap"> 
+			<h2>一门经过众多学员检验的Nginx课程</h2>
+			<h5>课程内容现已升级更新，上线一年来，好评如潮，众多学员通过这门课程掌握了Nginx，</br>完善了Webserver知识体系，你可自行看看课程真实评价</h5>
+			<div class="content-box clearfix">
+				<div class="content-left clearfix">
+					<div class="box-item">
+						<img src="/static/module/class/content/img/121/section1-1.png">
+						<p class="item-desc">
+							BAT一线工程师亲授</br>
+							结合多年从业经验讲解
+						</p>
+					</div>
+					<div class="box-item">
+						<img src="/static/module/class/content/img/121/section1-1.png">
+						<p class="item-desc">
+							不是单一知识点的堆砌</br>
+							从整体Nginx 配置，同时结合架构及HTTP</br>
+							协议原理讲解
+						</p>
+					</div>
+					<div class="box-item">
+						<img src="/static/module/class/content/img/121/section1-1.png">
+						<p class="item-desc">
+							使用Nginx 最新稳定版本（1.15）</br>
+							讲解HTTP2.0，GRPC代理模式配置等
+						</p>
+					</div>
+					<div class="box-item">
+						<img src="/static/module/class/content/img/121/section1-1.png">
+						<p class="item-desc">
+							数十个企业用场景</br>
+							学会能直接应用在生产中的技术
+						</p>
+					</div>
+				</div>
+				<img src="/static/module/class/content/img/121/section1-2.png" class="img-right">
+			</div>
+		</div>
+	</div>
+	<div class="section2">
+		<div class="wrap">
+			<h2>一门系统化的，权威的，介绍nginx中间件应用的课程</h2>
+			<h5>课程几乎能服务到所有后台开发技术人员、运维人员，并且，市面上你很难找到如此系统的课程</h5>
+			<div class="content-box clearfix">
+				<div class="box-item">
+					<p class="item-title">课程注重：实用性</p>
+					<p class="item-desc">
+						结合实践、收集各种场景、常见问题</br>
+						讲解Nginx中最实用的Webserver场景</br>
+						提供一套整体的搭建配置方式
+					</p>
+				</div>
+				<div class="box-item">
+					<p class="item-title">课程注重：通用性</p>
+					<p class="item-desc">
+						Nginx中间件，不局限于业务逻辑，有效</br>
+						独立于后台开发框架（不论后端是Java开</br>
+						发、PHP开发、或者其他语言框架）</br>
+						都能做到平台通用 
+					</p>
+				</div>
+				<div class="box-item">
+					<p class="item-title">课程注重：原理性</p>
+					<p class="item-desc">
+						不仅重实践、也会结合原理（如:Http协</br>
+						议、操作系统），让你理解背后的原理</br>
+						更有利于你解决实际问题</br>
+						（如：bug解决、二次开发等）
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="section3">
+		<div class="wrap">
+			<h2>完善你的Nginx 知识体系，快速搭建Webserver架构</h2>
+			<h5>不再对Nginx 一知半解，循序渐进，玩转Nginx的方方面面</h5>
+			<div class="content-box clearfix">
+				<div class="box-item">
+					<img src="/static/module/class/content/img/121/section3-1.png">
+					<p class="item-title">基础篇</p>
+					<p class="item-desc">
+						快速安装</br>
+						配置语法</br>
+						默认模块</br>
+						Nginx的log</br>
+						访问限制</br>
+						虚拟主机配置
+					</p>
+				</div>
+				<div class="box-item">
+					<img src="/static/module/class/content/img/121/section3-2.png">
+					<p class="item-title">场景实践篇</p>
+					<p class="item-desc">
+						静态资源服务</br>
+						代理服务</br>
+						常用的负载均衡实现方式</br>
+						Nginx数据缓存实现
+					</p>
+				</div>
+				<div class="box-item">
+					<img src="/static/module/class/content/img/121/section3-3.png">
+					<p class="item-title">深度学习篇</p>
+					<p class="item-desc">
+						实现动静分离及场景配置</br>
+						rewrite／Nginx防盗链</br>
+						网站访问加速常用方法</br>
+						进阶模块配置</br>
+						HTTPS服务</br>
+						Nginx与Lua开发
+					</p>
+				</div>
+				<div class="box-item">
+					<img src="/static/module/class/content/img/121/section3-4.png">
+					<p class="item-title">架构篇</p>
+					<p class="item-desc">
+						架构常见问题</br>
+						基于Nginx中间件性能优化</br>
+						Nginx与安全</br>
+						新版本特性</br>
+						中间件架构设计
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="section4">
+		<div class="wrap">
+			<h2>结合Nignx 企业应用场景讲解</h2>
+			<h5>课程包涵数十个常用且重要的场景，贴近企业实际生产，掌握这些，你将能轻松应对企业实际业务需求</h5>
+			<div class="content-box clearfix">
+				<div class="box-item">
+					<p class="item-title">HTTP代理服务</p>
+					<p class="item-desc">
+						正向代理</br>
+						反向代理</br>
+						Fastcgi、LNMP、Uwsgi</br>
+						GRPC、websocket等场景
+					</p>
+				</div>
+				<div class="box-item">
+					<p class="item-title">负载均衡</p>
+					<p class="item-desc">构建一套应用层负载均衡</p>
+				</div>
+				<div class="box-item">
+					<p class="item-title">基于Nginx的安全防护</p>
+					<p class="item-desc">
+						构建爬虫防空工程</br>
+						防止SQL注入</br>
+						突发流量限制
+					</p>
+				</div>
+				<div class="box-item">
+					<p class="item-title">Nginx Lua开发</p>
+					<p class="item-desc">
+						LUA开发基础语法</br>
+						LUA api接口</br> 
+						Nginx+LUA 实现灰度代码发布
+					</p>
+				</div>
+				<div class="box-item">
+					<p class="item-title">资源缓存</p>
+					<p class="item-desc">
+						设置客户端缓存、代理缓存</br>
+						Nginx+Memcached页面缓存
+					</p>
+				</div>
+				<div class="box-item">
+					<p class="item-title">静态资源Web服务</p>
+					<p class="item-desc">静态资源Web服务器部署配置</p>
+				</div>
+				<div class="box-item">
+					<p class="item-title">动静分离</p>
+					<p class="item-desc">
+						实现动态请求与静态请求分离</br>
+						实现资源分类
+					</p>
+				</div>
+				<div class="box-item">
+					<p class="item-title">访问认证</p>
+					<p class="item-desc">用户登录授信、IP访问控制</p>
+				</div>
+				<div class="box-item">
+					<p class="item-title">HTTPS服务</p>
+					<p class="item-desc">
+						构建苹果官方标准</br>
+						的HTTPS Web服务
+					</p>
+				</div>
+				<div class="box-item">
+					<p class="item-title">灰度发布测试</p>
+					<p class="item-desc">正式线上实现灰度发布配置</p>
+				</div>
+				<div class="box-item item-last">
+					<p class="item-title">课程升级，新增内容</p>
+					<p class="item-desc">
+						Nginx的优势epoll的原理、多路IO复用</br>
+						Nginx代理缓存的命中率分析</br>
+						Nginx平滑升级虚拟主机配置等等
+					</p>
+				</div>
+			</div>
+			<img src="/static/module/class/content/img/121/section4-1.png" class="img1">
+		</div>
+	</div>
+	<div class="section5">
+        <div class="wrap">
+            <h2>学员专享增值服务</h2>
+            <div class="content-box clearfix">
+                <div class="box-item">
+                    <i class="imv2-yuanwen"></i>
+                    <div class="smalle-title">问答专区</div>
+                    <p>关于课程的问题都可在问答区随时提问，讲</p>
+                    <p>师会进行集中答疑</p>
+                </div>
+                <div class="box-item">
+                    <i class="imv2-shouji"></i>
+					<div class="smalle-title">代码开放</div>
+                    <p>提供所有课内场景的模版配置和场景代</p>
+                    <p>码 ，供你练习，你可自行修改、优化</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section6">
+        <div class="wrap">
+            <div class="content-box clearfix">
+                <div class="context-box">
+                    <h2>适合人群</h2>
+                    <p>
+						如果你是后台开发者，想快速上手Nginx，或者你因为对Nginx原理不太</br>
+						理解，在面试中屡屡受挫，再或者你是运维工程师，但对Nginx缺乏多场</br>
+						景的实战应用经验，那这门课程你务必要学习
+                    </p>
+                </div>
+                <div class="context-box">
+                    <h2>技术储备要求</h2>
+                    <p>
+						技术储备要求：</br>
+						－掌握Linux基础</br>
+						－具备基础的网站开发能力 
+					</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+		<!--ES_END-->
+	</div>
+		
+	
+		<div class="envir-box" id="Envir">
+		<h1>环境参数</h1>
+		<div class="detail-box">
+			<ul class="clearfix">
+								<li class="l ">
+					<span class="detail-tag">技术语言</span>
+					<i class="triangle"></i>
+					<span class="detail">LUA、HTML、JAVA、PHP、Python、Shell</span>
+				</li>
+								<li class="l ">
+					<span class="detail-tag">课程开发系统</span>
+					<i class="triangle"></i>
+					<span class="detail">Centos7.2_x64</span>
+				</li>
+								<li class="l ">
+					<span class="detail-tag">环境</span>
+					<i class="triangle"></i>
+					<span class="detail">Nginx1.12 Lua5.1 tomcat 9 memcache1.4 mariadb-5.5</span>
+				</li>
+								<li class="l ">
+					<span class="detail-tag">开发工具</span>
+					<i class="triangle"></i>
+					<span class="detail">vim</span>
+				</li>
+							</ul>
+		</div>
+	</div>
+	
+	
+		<div class="user-evaluation-box">
+		<div class="user-evalustion">
+			<h2>万事俱备 只等你来</h2>
+			<ul class="clearfix">
+								<li class="l">
+					<div class="user-box clearfix">
+						<img src="//img.mukewang.com/user/5333a2590001069f02000200-100-100.jpg" width="64" height="64">
+						<p class="user-name">极客不忙</p>
+						<div class="user-text-box">
+							<p class="star js-bstar">
+								<span class='star'><i class="sz-star on"></i><i class="sz-star on"></i><i class="sz-star on"></i><i class="sz-star on"></i><i class="sz-star on"></i></span>
+							</p>
+						</div>
+					</div>
+					<p class="content" title="老师讲的思路很清晰，结合案例，生产上都能用的到，要是早出来这样的课程就好了，不至于之前走那么多的弯路，也希望老师出下zabbix的监控，mysql数据库，希望都带有案例脚本，真正能解决实际应用当中的问题。">老师讲的思路很清晰，结合案例，生产上都能用的到，要是早出来这样的课程就好了，不至于之前走那么多的弯路，也希望老师出下zabbix的监控，mysql数据库，希望都带有案例脚本，真正能解决实际应用当中的问题。</p>
+				</li>
+								<li class="l">
+					<div class="user-box clearfix">
+						<img src="//img.mukewang.com/user/53a58286000175e301000100-100-100.jpg" width="64" height="64">
+						<p class="user-name">紫气东来0106</p>
+						<div class="user-text-box">
+							<p class="star js-bstar">
+								<span class='star'><i class="sz-star on"></i><i class="sz-star on"></i><i class="sz-star on"></i><i class="sz-star on"></i><i class="sz-star on"></i></span>
+							</p>
+						</div>
+					</div>
+					<p class="content" title="相比较于网络上零散的Nginx资料，该课程系统全面，由浅入深，而且配备有基于Docker搭建的远程服务器，可以边学习边敲代码看效果，值得入手^_^">相比较于网络上零散的Nginx资料，该课程系统全面，由浅入深，而且配备有基于Docker搭建的远程服务器，可以边学习边敲代码看效果，值得入手^_^</p>
+				</li>
+								<li class="l">
+					<div class="user-box clearfix">
+						<img src="//img.mukewang.com/user/545846230001832502200220-100-100.jpg" width="64" height="64">
+						<p class="user-name">慕前端6234593</p>
+						<div class="user-text-box">
+							<p class="star js-bstar">
+								<span class='star'><i class="sz-star on"></i><i class="sz-star on"></i><i class="sz-star on"></i><i class="sz-star on"></i><i class="sz-star on"></i></span>
+							</p>
+						</div>
+					</div>
+					<p class="content" title="课程中全是干货无废话，对于没有用过Nginx的人跟着老师一步一步操作也能上手。有个疑问，Nginx貌似也能支持TCP协议的代理及均衡负载配置，希望课程中能对这部分有所讲解。">课程中全是干货无废话，对于没有用过Nginx的人跟着老师一步一步操作也能上手。有个疑问，Nginx貌似也能支持TCP协议的代理及均衡负载配置，希望课程中能对这部分有所讲解。</p>
+				</li>
+							</ul> 
+			<a href="/class/evaluation/121.html#Anchor" class="more">查看全部<span>102</span>条用户评价</a>
+		</div>
+	</div>
+		
+
+	
+	<div class="preconsultation" id="Prchor">
+		<div class="w question-input">
+			<input type="text" placeholder="输入你的课程咨询问题" class="input-block js-inputcont" data-can-search="true" data-pagesize="6">
+			<div class="question-btn js-question-btn" data-cid="121">提问</div>
+		</div>
+		<div class="w question-contain js-load-prelist" data-cid="121">
+			<div class="comp-loading">
+				<i class="sz-loading"></i>
+				<span class="text">数据加载中...</span>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="w shizhan-recommendcourse js-recom-course" data-id="121">
+		
+	</div>
+
+	
+	<div class="w info-recommendcourse js-prelearn" data-id="121">
+	</div>
+	
+
+</div>
+
+
+
+
+        
+<div id="footer">
+<div class="waper">
+    <div class="footerwaper clearfix">
+        <div class="followus r">
+            <a class="followus-weixin" href="javascript:;"  target="_blank" title="微信">
+                <div class="flw-weixin-box"></div>
+            </a>
+            <a class="followus-weibo" href="http://weibo.com/u/3306361973"  target="_blank" title="新浪微博"></a>
+            <a class="followus-qzone" href="http://user.qzone.qq.com/1059809142/" target="_blank" title="QQ空间"></a>
+        </div>
+        <div class="footer_intro l">
+            <div class="footer_link">
+                <ul>
+                    <li><a href="//www.imooc.com/" target="_blank">网站首页</a></li>
+                    <li><a href="//www.imooc.com/index/companytrain" target="_blank" title="企业合作">企业合作</a></li>
+                    <li><a href="//www.imooc.com/about/job" target="_blank">人才招聘</a></li>
+                    <li> <a href="//www.imooc.com/about/contact" target="_blank">联系我们</a></li>
+                    <li> <a href="//www.imooc.com/about/recruit" target="_blank">讲师招募</a></li>
+                     <li> <a href="//www.imooc.com/help/cate/19" target="_blank">帮助中心</a></li>
+                    <li> <a href="//www.imooc.com/user/feedback?coding" target="_blank">意见反馈</a></li>
+                    <li><a href="http://daxue.imooc.com/" target="_blank">慕课大学</a></li>
+                    <li> <a href="//www.imooc.com/about/friendly" target="_blank">友情链接</a></li>
+                    <!-- <li><a href="http://www.imooc.com/about/us" target="_blank">关于我们</a></li> -->
+                </ul>
+            </div>
+            <p>Copyright © 2018 imooc.com All Rights Reserved | 京ICP备 12003892号-11</p>
+        </div>
+    </div>
+</div>
+</div>
+<!-- 新人有礼入口 -->
+<a class="newcomer hide" href="//www.imooc.com/act/newcomer" target="_blank">
+    <i class="js-close imv2-close"></i>
+</a>
+
+<div id="J_GotoTop" class="elevator">
+
+    <a href="//www.imooc.com/user/feedback?coding" class="elevator-msg"  target="_blank" >
+        <i class="sz-feedback"></i>
+        <span class="">意见反馈</span>
+    </a>
+    <a href="//www.imooc.com/help/cate/19" class="elevator-faq"  target="_blank" >
+        <i class="sz-help_outline"></i>
+        <span class="">帮助中心</span>
+    </a>
+    <a href="//www.imooc.com/mobile/app" target="_blank" class="elevator-app" >
+        <i class="sz-appdownload"></i>
+        <span class="">APP下载</span>
+        <div class="elevator-app-box"></div>
+    </a>
+    <a href="javascript:void(0)" class="elevator-weixin no-goto" id="js-elevator-weixin" >
+        <i class="sz-weixigzh"></i>
+        <span class="">官方微信</span>
+        <div class="elevator-weixin-box"></div>
+    </a>
+    <a href="javascript:void(0)" class="elevator-top no-goto" style="display:none" id="backTop">
+        <i class="sz-arrow-up"></i>
+        <span class="">返回顶部</span>
+    </a>
+</div>
+
+
+
+
+<script type="text/javascript" src="//moco.imooc.com/static/monitor/error.js"></script>
+<script src="/passport/static/scripts/ssologin.js?v=2.0"></script>
+<script type="text/javascript" src="/static/module/common/js/common.js?v=201810311053"></script>
+<script type="text/javascript" src="//www.imooc.com/static/moco/v1.0/dist/js/moco.min.js"></script>
+
+
+
+
+
+
+    <script src='/static/lib/jquery-fly/jquery.fly.js'></script>
+	 <!--[if gte IE 9]><script src='/static/lib/jquery-fly/requestAnimationFrame.js'></script><![endif]-->
+	<script src='/static/lib/jquery-qrcode/qrcode.js'></script>
+    <script data-entry="class/index">
+		requirejs(['class/index'], function(){});
+    (function(){
+        var imgPic = '//img.mukewang.com/szimg/5b908d5b0001383c05400300-280-160.jpg' || 'https://www.imooc.com/static/img/index/logo_new.png',
+            text = '我正在参加@慕课网 的一门课程【' + 'Nginx入门到实践 Nginx 中间件' + '】，很不错哦！快来一起学习吧！', //节名称
+            url = 'https://coding.imooc.com' + window.location.pathname;
+
+        window._bd_share_config = {
+            "common": {
+                "bdUrl": url,
+                "bdSnsKey": {
+                  'tsina':'2788596354'
+                },
+                "bdText": text,
+                "bdMini": "2",
+                "bdMiniList": false,
+                "bdPic": imgPic,
+                "bdStyle": "0",
+                "bdSize": "16"
+            },
+            "share": {}
+        };
+        with(document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = '/static/lib/baiduShare/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+      })();
+    </script>
+
+
+<div class="comp-modal-overlay"></div>
+<div class="modal modal-buy" id="before-buy-modal">
+    <div class="inner">
+        <div class="header">
+            <strong class="tit">购买课程</strong>
+            <a href="javascript:;" class="help">帮助？</a>
+        </div>
+        <div class="content">
+            <div class="infos">
+                <span class="name">Nginx入门到实践 Nginx 中间件</span>
+                <span class="price">
+																	<i>&yen;</i><b>266</b><i>.00</i>
+								</span>
+                <span class="deadline">
+					
+					                </span>
+            </div>
+        </div>
+        <div class="footer">
+            <a href="javascript:;" class="cancel-btn" rel="modal:close">取消</a>
+            <a data-href="/pay/buynow/cid/121" href='javascript:;' class="go-pay-btn">去支付</a>
+        </div>
+    </div>
+</div>
+
+<div style="display: none">
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?c1c5f01e0fc4d75fd5cbb16f2e713d56";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+</div>
+
+</body>
+</html>
