@@ -121,72 +121,34 @@ bs = BeautifulSoup(position_str, "lxml")
 
 
 # 1.获取所有tr标签
-# bs.find_all("tr")
-# trs = bs.find_all("tr")
+# trs = bs.select("tr")
 # for tr in trs:
 #     print(tr)
 
 # 2.获取第2个tr标签
-# bs.find_all("tr", limit=2)[1]
-# tr = bs.find_all("tr", limit=2)[1]
+# tr = bs.select("tr")[1]
 # print(tr)
 
 # 3.获取所有class等于even的tr标签
-# trs = bs.find_all("tr", class_="even")
-# for tr in trs:
-#     print(tr)
-# =======================================
-# trs = bs.find_all("tr", attrs={"class": "even"})
+# trs = bs.select("tr.even")
+# print(len(trs))
 # for tr in trs:
 #     print(tr)
 
 # 4.获取所有id等于test, class等于even的a标签
-# a_s = bs.find_all("a", id="test", class_="even")
-# for a in a_s:
-#     print(a)
-# =======================================
-# a_s = bs.find_all("a", attrs={"class": "even", "id": "test"})
-# for a in a_s:
-#     print(a)
+# a_s = bs.select("a#test")
+# print(len(a_s))
 
 # 5.获取所有a标签的href属性
-# a_s = bs.find_all("a")
+# a_s = bs.select("a")
 # for a in a_s:
-#     print(a["href"])
-#     # =======================================
-#     print(a.attrs["href"])
+#     href = a['href']
+#     print(href)
+
 
 # 6.获取所有职位信息（纯文本）
-trs = bs.find_all("tr")[1:]
-trs.pop()
+trs = bs.select("tr")
 for tr in trs:
-    # tds = tr.find_all("td")
-    # title = tds[0].string
-    # category = tds[1].string
-    # nums = tds[2].string
-    # city = tds[3].string
-    # time = tds[4].string
-    # position = {
-    #     "title": title,
-    #     "category": category,
-    #     "nums": nums,
-    #     "city": city,
-    #     "time": time,
-    # }
-    # infos = list(tr.strings)
-    # get_text() 返回来的不是list是字符串
-    # print(tr.get_text())
+    print(tr.stripped_strings) # generator对象 子孙节点所有的文本取出来
     infos = list(tr.stripped_strings)
-    title = infos[0]
-    category = infos[1]
-    nums = infos[2]
-    city = infos[3]
-    time = infos[4]
-    position = {
-        "title": title,
-        "category": category,
-        "nums": nums,
-        "city": city,
-        "time": time,
-    }
-    print(position)
+    print(infos)
